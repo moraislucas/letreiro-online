@@ -138,7 +138,7 @@ export default {
   margin: 30px auto;
 }
 .output h2 {
-  font-size: 100px;
+  font-size: 80px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: -4px;
@@ -147,13 +147,10 @@ export default {
   filter: drop-shadow(0 0 30px var(--cor_letra));
 }
 .output.running h2 {
-  font-size: 120px;
-  transform: rotate(90deg);
+  font-size: 100px;
+  margin-top: 100px;
 }
-.output.running {
-  margin-top: 200px;
-  transform: rotate(-90deg);
-}
+
 @keyframes marquee {
   0% {
     transform: translateX(100%);

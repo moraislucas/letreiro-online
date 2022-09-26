@@ -1,58 +1,190 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <section class="container letreiro">
+    <h1 v-if="!running" data-anima="top">
+      <div class="logo">
+        <span>•</span>
+        <span>•</span>
+        <span>•</span>
+      </div>
+      Letreiro Online
+    </h1>
+    <div
+      :class="{ running: running }"
+      class="output"
+      :style="`background: ${color.fundo};`"
+      data-anima="rigth"
+    >
+      <h2 :style="`color: ${color.letra};`">
+        {{ text }}
+      </h2>
+    </div>
+    <div v-if="!running" data-anima="bottom">
+      <input
+        style="text-transform: uppercase"
+        type="text"
+        placeholder="Digite o seu texto"
+        v-model="text"
+        @keyup="calcSpace"
+      />
+      <div class="acoes">
+        <input
+          type="color"
+          value="#000000"
+          v-model="color.letra"
+          @change="neon"
+        />
+        <input type="color" value="#ffffff" v-model="color.fundo" />
+        <button class="btn" @click.prevent="run">Iniciar</button>
+      </div>
+    </div>
+    <div class="stop" @click="stop" v-if="running"></div>
+  </section>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  data() {
+    return {
+      running: false,
+      text: "Digite o seu texto",
+      color: {
+        letra: "#000000",
+        fundo: "#ffffff",
+      },
+    };
+  },
+  methods: {
+    neon() {
+      document.documentElement.style.setProperty(
+        "--cor_letra",
+        this.color.letra
+      );
+    },
+    calcSpace() {
+      document.documentElement.style.setProperty(
+        "--ate_quando",
+        `-${this.text.length * 10}%`
+      );
+    },
+    run() {
+      this.running = true;
+      document.body.style.background = this.color.fundo;
+    },
+    stop() {
+      if (this.running) {
+        this.running = false;
+        this.color = {
+          letra: "#000000",
+          fundo: "#ffffff",
+        };
+        document.body.style.background = this.color.fundo;
+      }
+    },
+  },
+  mounted() {
+    document.documentElement.style.setProperty(
+      "--ate_quando",
+      `-${this.text.length * 10}%`
+    );
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
+<style >
+:root {
+  --ate_quando: -100%;
+  --cor_letra: #000;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.letreiro {
+  margin: 80px auto !important;
+  width: 100%;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.letreiro h1 {
+  font-size: 32px;
+  padding-left: 50px;
+  display: flex;
+  align-items: center;
 }
-a {
-  color: #42b983;
+.logo {
+  width: 35px;
+  height: 35px;
+  background: #000;
+  margin: 0 auto;
+  border-radius: 5px;
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo span {
+  font-size: 22px;
+}
+.logo span:first-child {
+  color: red;
+}
+.logo span:nth-last-child(2) {
+  color: green;
+}
+.logo span:last-child {
+  color: blue;
+}
+
+.output {
+  min-height: 12vh;
+  overflow: hidden;
+
+  margin: 30px auto;
+}
+.output h2 {
+  font-size: 100px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -4px;
+  white-space: nowrap;
+  animation: marquee 10s linear infinite both;
+  filter: drop-shadow(0 0 30px var(--cor_letra));
+}
+.output.running h2 {
+  font-size: 120px;
+  transform: rotate(90deg);
+}
+.output.running {
+  margin-top: 200px;
+  transform: rotate(-90deg);
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(var(--ate_quando));
+  }
+}
+.letreiro input[type="color"] {
+  width: 60px;
+  padding: 7px;
+  margin: 0;
+  cursor: pointer;
+}
+.letreiro .btn {
+  margin: 0;
+}
+.letreiro .acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+.stop {
+  width: 100%;
+  height: 150vh;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
 }
 </style>
